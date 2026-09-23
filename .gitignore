@@ -16,3 +16,13 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+
+# ── مخلّفات تشغيل واختبار ──
+pip/
+*.log
+homesim/
+
+# -- مخلفات تشغيل واختبار --
+pip/
+*.log
+homesim/
