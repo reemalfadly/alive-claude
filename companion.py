@@ -38,6 +38,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE / "senses"))
 
+import _platform as plat  # noqa: E402
 from _common import ask, config, line, user_name  # noqa: E402
 
 HEARD = BASE / "heard.md"
@@ -294,6 +295,10 @@ def _listen_loop() -> None:
 
 
 # ══════════ الأيقونه ══════════
+# لو النظام ما يدعم الشفافيه، نرسم على خلفيه داكنه بدل مربّع أخضر
+FALLBACK_BG = "#0b1016"
+
+
 class Pet:
     def __init__(self) -> None:
         self.root = tk.Tk()
@@ -301,13 +306,21 @@ class Pet:
         self.root.overrideredirect(True)
         self.root.attributes("-topmost", True)
         self.root.configure(bg=CHROMA)
-        try:
-            self.root.attributes("-transparentcolor", CHROMA)
-        except tk.TclError:
-            pass
+
+        # الشفافيه تختلف بين الأنظمه:
+        #   ويندوز ← `-transparentcolor` يشيل لوناً محدداً بالضبط
+        #   ماك    ← `-transparent` مع خلفية systemTransparent
+        #   لينكس  ← ما فيه طريقه موحّده (يعتمد على مدير النوافذ)
+        # لو ما نجحت، نخلّي خلفيه داكنه بدل مربّع ملوّن غريب.
+        if not plat.make_transparent(self.root, CHROMA):
+            self.root.configure(bg=FALLBACK_BG)
+            try:
+                self.root.attributes("-alpha", 0.92)
+            except tk.TclError:
+                pass
 
         self.canvas = tk.Canvas(self.root, width=PET, height=PET,
-                                bg=CHROMA, highlightthickness=0)
+                                bg=self.root["bg"], highlightthickness=0)
         self.canvas.pack()
 
         self._place()

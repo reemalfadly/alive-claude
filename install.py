@@ -28,7 +28,16 @@ SKIP = {"__pycache__", ".git", ".github", "config.json", ".env",
         ".vision_ref.jpg", "docs"}
 
 REQUIRED = ["requests", "numpy", "Pillow", "mss", "psutil", "python-dotenv"]
-WINDOWS_ONLY = ["sounddevice", "soundcard"]
+AUDIO = ["sounddevice", "soundcard"]        # الثلاثه يدعمونها
+
+# أدوات النظام اللي ما تنزّل بـpip
+SYSTEM_TOOLS = {
+    "linux": ("التحكّم بالنوافذ يحتاج أدوات من توزيعتك:",
+              "sudo apt install xdotool wmctrl     (أو dnf/pacman)"),
+    "darwin": ("ماك يطلب إذناً أول مره تتحكّم بالنوافذ:",
+               "System Settings ← Privacy & Security ← Accessibility"),
+    "win32": ("", ""),
+}
 
 
 def line(ch: str = "─", n: int = 54) -> None:
@@ -71,9 +80,9 @@ def copy_skill() -> Path:
 
 
 def install_packages() -> None:
-    packages = list(REQUIRED)
-    if sys.platform == "win32":
-        packages += WINDOWS_ONLY
+    # الصوت يشتغل بالثلاثه: WASAPI بويندوز، CoreAudio بماك،
+    # PulseAudio بلينكس. ما نستثني أي نظام.
+    packages = list(REQUIRED) + AUDIO
 
     print()
     print("  أنزّل " + str(len(packages)) + " مكتبه…")
@@ -86,7 +95,44 @@ def install_packages() -> None:
         print("     " + sys.executable + " -m pip install " + " ".join(packages))
 
 
+HELP = """
+  كلود حي — التنزيل
+
+    python install.py          ينسخ المهاره + ينزّل المكتبات + يسأل عن اسمك
+    python install.py --auto   نفس الشي **بلا أي أسئله** (لكلود كود)
+    python install.py --help   هذا الشرح
+
+  ينسخ إلى: ~/.claude/skills/alive-claude/
+  يشتغل على ويندوز وماك ولينكس.
+"""
+
+
+def _stamp_config(dest: Path) -> None:
+    """يكتب قالب إعدادات فاضياً — بلا اسم، عشان كلود يسأل عنه.
+
+    ما ندوس على إعداد موجود: لو المستخدم محدّث المهاره، اسمه ومفتاحه
+    يضلّون مكانهم.
+    """
+    import json
+
+    f = dest / "config.json"
+    if f.exists():
+        return
+    f.write_text(json.dumps({
+        "name": "",
+        "language": "ar",
+        "wake_phrase": "كلود اسمعني",
+        "voice": "Puck",
+        "gemini_key": "",
+        "watch_folders": [],
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def main() -> None:
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print(HELP)
+        return
+
     print()
     print("  كلود حي — التنزيل")
     line("═")
@@ -97,23 +143,43 @@ def main() -> None:
               ".".join(str(x) for x in sys.version_info[:3]))
         return
 
+    auto = "--auto" in sys.argv
+
     dest = copy_skill()
     install_packages()
 
-    print()
-    line()
-    print("  الإعداد — بيسألك عن اسمك ومفتاحك")
-    line()
-    try:
-        subprocess.run([sys.executable, str(dest / "setup.py")], check=False)
-    except KeyboardInterrupt:
+    head, cmd = SYSTEM_TOOLS.get(sys.platform, SYSTEM_TOOLS["linux"])
+    if head:
         print()
-        print("  وقفت الإعداد. تقدر تشغّله بعدين:")
-        print("     python " + str(dest / "setup.py"))
-        return
+        print("  " + head)
+        print("     " + cmd)
+
+    if auto:
+        # كلود كود يشغّلها بلا طرفيه تفاعليه — `input()` هني يرمي EOFError.
+        # فنتخطّى الإعداد، وكلود يسأل المستخدم بالمحادثه ويكتب config.json.
+        print()
+        line()
+        print("  ✅ نزّلت المهاره. باقي الاسم والمفتاح.")
+        print("     " + str(dest / "config.json"))
+        _stamp_config(dest)
+    else:
+        print()
+        line()
+        print("  الإعداد — بيسألك عن اسمك ومفتاحك")
+        line()
+        try:
+            subprocess.run([sys.executable, str(dest / "setup.py")], check=False)
+        except KeyboardInterrupt:
+            print()
+            print("  وقفت الإعداد. تقدر تشغّله بعدين:")
+            print("     python " + str(dest / "setup.py"))
+            return
 
     print()
     line("═")
+    print()
+    print("  النظام: " + {"win32": "ويندوز", "darwin": "ماك"}
+          .get(sys.platform, "لينكس"))
     print()
     print("  خلصنا. افتح كلود كود وقل:")
     print()

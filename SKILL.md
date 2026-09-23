@@ -1,6 +1,6 @@
 ---
 name: alive-claude
-description: كلود حي — يعطي كلود كود حواسّاً على جهاز المستخدم، Alive Claude gives Claude Code senses on the user's machine. ALWAYS use this skill when the user asks Claude to see, look at, read, or watch their screen; to hear what is playing on their machine; to listen to their microphone; to sense or check whether anything is wrong; to control their windows; or to notice their habits. Arabic triggers "كلود حي"، "شوف شاشتي"، "وش على الشاشه"، "وش مكتوب"، "وش تغيّر"، "تابع معاي هالمقطع"، "شوف الزاويه اليمنى"، "وش مشغّل"، "اسمع اللي مشغّله"، "كلود اسمعني"، "شم لي"، "كل شي تمام؟"، "وش عاداتي"، "أنا مركّز؟"، "نزّل كلود حي"، "فعّل الحواس". English triggers "look at my screen", "what's on my screen", "read my screen", "what changed on screen", "watch my screen", "what am I playing", "listen to my mic", "sense my machine", "is anything wrong with my computer", "install alive claude". Works on Windows with a free Google AI Studio key; everything runs locally except the vision and natural-voice calls.
+description: كلود حي — يعطي كلود كود حواسّاً على جهاز المستخدم، Alive Claude gives Claude Code senses on the user's machine. ALWAYS use this skill when the user asks Claude to see, look at, read, or watch their screen; to hear what is playing on their machine; to listen to their microphone; to sense or check whether anything is wrong; to control their windows; or to notice their habits — and ALWAYS when they ask to install, set up, or activate Alive Claude. Arabic triggers "كلود حي"، "شغّل كلود حي"، "نزّل كلود حي"، "فعّل الحواس"، "شوف شاشتي"، "وش على الشاشه"، "وش مكتوب"، "وش تغيّر"، "تابع معاي هالمقطع"، "شوف الزاويه اليمنى"، "وش مشغّل"، "اسمع اللي مشغّله"، "كلود اسمعني"، "شم لي"، "كل شي تمام؟"، "وش عاداتي"، "أنا مركّز؟"، "شغّله بالخلفيه". English triggers "run alive claude", "install alive claude", "set up alive claude", "look at my screen", "what's on my screen", "read my screen", "what changed on screen", "watch my screen", "what am I playing", "listen to my mic", "sense my machine", "is anything wrong with my computer", "run it in the background". Works on Windows, macOS and Linux with a free Google AI Studio key; everything runs locally except the vision and natural-voice calls.
 ---
 
 # كلود حي — حواس على جهاز المستخدم
@@ -13,22 +13,87 @@ description: كلود حي — يعطي كلود كود حواسّاً على ج
 
 ---
 
-## ⚡ أول شي — اسأل عن اسمه
+## 🚀 لو طلب التنزيل أو التشغيل
 
-**قبل أي حاسه، افحص الإعدادات:**
+لو قال «شغّل alive claude» أو «نزّل كلود حي» أو `run alive claude`،
+**نفّذ بنفسك بلا ما تخلّيه يسوي شي**:
+
+### ١. شوف هل هي منزّله أصلاً
 
 ```bash
-python senses/_common.py
+python ~/.claude/skills/alive-claude/senses/_common.py
 ```
 
-لو طبع `الاسم : صديقي` يعني ما فيه اسم محفوظ. **اسأل المستخدم:**
+لو اشتغل، هي منزّله — روح للخطوه ٣.
+لو ما اشتغل، نزّلها:
 
-> «أهلاً! أنا كلود. وش أناديك؟»
+### ٢. نزّلها
 
-وشغّل `python setup.py` أو اكتب الاسم بـ`config.json` مباشره.
+```bash
+git clone https://github.com/reemalfadly/alive-claude.git /tmp/alive-claude
+python /tmp/alive-claude/install.py --auto
+```
 
-**لا تفترض أي اسم أبداً.** لا من اسم المستخدم بويندوز، ولا من مجلداته،
-ولا من أي مثال بهالملف. الاسم يجي من المستخدم نفسه أو من `config.json` فقط.
+`--auto` ينسخ وينزّل المكتبات **بلا أسئله**. (بلا `--auto` بيسأل تفاعلياً،
+وهذا ما ينفع من داخل كلود كود.)
+
+### ٣. اسأله عن اسمه ومفتاحه
+
+**هذي الخطوه الوحيده اللي تحتاجه.** اسأله بنفسك بالمحادثه:
+
+> «وش أناديك؟ وعندك مفتاح من Google AI Studio؟ (مجاني من
+> aistudio.google.com/apikey — بلا مفتاح البصر والصوت بس يتعطّلون)»
+
+واكتب جوابه بـ`~/.claude/skills/alive-claude/config.json`:
+
+```json
+{
+  "name": "<اسمه اللي قاله>",
+  "gemini_key": "<مفتاحه أو فاضي>",
+  "wake_phrase": "كلود اسمعني",
+  "voice": "Puck",
+  "language": "ar"
+}
+```
+
+**لا تفترض أي اسم أبداً** — لا من اسم المستخدم بالنظام، ولا من مجلداته،
+ولا من أي مثال بهالملف.
+
+### ٤. جرّبها قدامه
+
+```bash
+cd ~/.claude/skills/alive-claude && python senses/see.py
+```
+
+### ٥. اعرض عليه الخلفيه
+
+> «تبيها تشتغل تلقائياً مع كل إقلاع؟»
+
+لو قال نعم:
+
+```bash
+cd ~/.claude/skills/alive-claude && python background.py --on
+```
+
+---
+
+## 🖥 أول شي بأي حاسه: افحص النظام
+
+```bash
+python senses/_platform.py
+```
+
+يقول لك: أي نظام، وش يشتغل، ووش ينقص. **اقرأه قبل ما تقول للمستخدم
+إن شيئاً ما يشتغل** — أغلب الأعطال أداة ناقصه مو عطل حقيقي.
+
+| | ويندوز | ماك | لينكس |
+|---|:---:|:---:|:---:|
+| البصر · المايك · الصوت · الشمّ | ✅ | ✅ | ✅ |
+| اليد (النوافذ) | ✅ | إذن Accessibility | `xdotool` + `wmctrl` |
+| سمع مخرَج الجهاز | ✅ | يحتاج BlackHole | ✅ |
+| كشف التجمّد | ✅ | ➖ | ➖ |
+
+الاختصارات تنقلب تلقائياً: «احفظ» = `Ctrl+S` بويندوز و`Cmd+S` بماك.
 
 ---
 
@@ -65,7 +130,7 @@ python senses/hear.py 15          # يسمع ١٥ ثانيه ويفرّغها
 ```
 
 يلتقط اللي **يطلع من السماعات** — فيديو · بودكاست · أغنيه · اجتماع.
-ويندوز فقط (WASAPI loopback). التفريغ محلي بالكامل.
+لو ما اشتغل، الأمر نفسه يطبع وش ينقص بالضبط (ماك يحتاج BlackHole).
 
 ### 🎤 الإصغاء — المايك
 
@@ -97,14 +162,25 @@ python senses/smell.py --watch    # مراقبه مستمره
 ### ✋ اليد
 
 ```bash
+python senses/hand.py                     # نوافذه واختصاراته
 python senses/hand.py --switch chrome
 python senses/hand.py --key "ctrl+s"
+python senses/hand.py احفظ
 ```
 
 ### 🧠 الملاحظه
 
 ```bash
 python senses/notice.py
+```
+
+### 🌙 الخلفيه
+
+```bash
+python background.py              # الحاله
+python background.py --on         # يشتغل مع كل إقلاع
+python background.py --off        # يوقفه
+python background.py --now        # يشغّله الحين بس
 ```
 
 ---
@@ -162,8 +238,6 @@ python guard.py            # فحص
 python guard.py --fix      # إصلاح
 ```
 
-يمسك السلاسل المكسوره اللي تصير لما يتعدّل ملف بسكربت.
-
 ---
 
 ## 📁 الملفات
@@ -172,12 +246,14 @@ python guard.py --fix      # إصلاح
 alive-claude/
 ├── SKILL.md              ← هذا الملف
 ├── README.md             شرح التنزيل
-├── install.py            التنزيل بأمر واحد
-├── setup.py              الإعداد — يسأل عن الاسم والمفتاح
+├── install.py            التنزيل (--auto للتنزيل بلا أسئله)
+├── setup.py              الإعداد التفاعلي
+├── background.py         التشغيل مع الإقلاع
 ├── guard.py              حارس الصياغه
 ├── companion.py          الرفيق العايم
-├── config.json           إعدادات المستخدم (يُنشأ تلقائياً، git يتجاهله)
+├── config.json           إعدادات المستخدم (git يتجاهله)
 └── senses/
+    ├── _platform.py      طبقة النظام — ويندوز · ماك · لينكس
     ├── _common.py        الأساس + `--probe`
     ├── see.py            البصر
     ├── hear.py           مخرَج الجهاز
@@ -187,6 +263,9 @@ alive-claude/
     ├── hand.py           اليد
     └── notice.py         الملاحظه
 ```
+
+**`_platform.py` هو المكان الوحيد اللي يعرف نظام التشغيل.** أي حاسه
+تنادي ويندوز مباشره = تنهار على ماك. لو ضفت قدره جديده، ضِف نداءها هناك.
 
 ---
 

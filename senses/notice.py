@@ -19,11 +19,16 @@
 from __future__ import annotations
 
 import logging
+import sys
 import threading
 import time
 from collections import Counter, deque
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import _platform as plat  # noqa: E402
 
 logger = logging.getLogger("alive.notice")
 
@@ -162,17 +167,11 @@ class HabitSense:
             pass
 
     def _active_app(self) -> str:
-        import ctypes
-
         try:
-            u = ctypes.windll.user32
-            hwnd = u.GetForegroundWindow()
-            n = u.GetWindowTextLengthW(hwnd)
-            if not n:
+            win = plat.active_window()
+            if not win:
                 return ""
-            b = ctypes.create_unicode_buffer(n + 1)
-            u.GetWindowTextW(hwnd, b, n + 1)
-            title = b.value
+            title = win["title"]
             # آخر جزء بعد الشرطه عادةً اسم البرنامج
             for sep in (" - ", " — ", " | "):
                 if sep in title:
@@ -267,17 +266,11 @@ class AttentionSense:
         self._running = threading.Event()
 
     def _title(self) -> str:
-        import ctypes
-
         try:
-            u = ctypes.windll.user32
-            hwnd = u.GetForegroundWindow()
-            n = u.GetWindowTextLengthW(hwnd)
-            if not n:
+            win = plat.active_window()
+            if not win:
                 return ""
-            b = ctypes.create_unicode_buffer(n + 1)
-            u.GetWindowTextW(hwnd, b, n + 1)
-            return b.value
+            return win["title"]
         except Exception:
             return ""
 
@@ -349,29 +342,14 @@ class ClipboardSense:
         self._on_copy = fn
 
     def _read(self) -> str:
-        import ctypes
+        """نص الحافظه — تُقرأ وتُرمى، وما تُخزَّن أبداً.
 
-        CF_UNICODETEXT = 13
-        try:
-            u = ctypes.windll.user32
-            k = ctypes.windll.kernel32
-            if not u.OpenClipboard(0):
-                return ""
-            try:
-                handle = u.GetClipboardData(CF_UNICODETEXT)
-                if not handle:
-                    return ""
-                ptr = k.GlobalLock(handle)
-                if not ptr:
-                    return ""
-                try:
-                    return ctypes.c_wchar_p(ptr).value or ""
-                finally:
-                    k.GlobalUnlock(handle)
-            finally:
-                u.CloseClipboard()
-        except Exception:
-            return ""
+        كانت هني نسخه تنادي `GlobalLock` بلا إعلان أنواع، فيتقصّ المؤشر
+        ٦٤ بت ويسقط **الإنتربريتر كامل** بـSegmentation fault — مو
+        استثناءً نقدر نمسكه. طبقة النظام تعلن الأنواع صح، وتشتغل
+        بالثلاثه: ويندوز · pbpaste بماك · xclip/wl-paste بلينكس.
+        """
+        return plat.clipboard()
 
     def _is_secret(self, text: str) -> bool:
         low = text.lower()

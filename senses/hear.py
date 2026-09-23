@@ -21,7 +21,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _common import ensure, line, windows_only  # noqa: E402
+import _platform as plat  # noqa: E402
+from _common import ensure, line  # noqa: E402
 
 RATE = 16_000
 DEFAULT_SECONDS = 15.0
@@ -29,18 +30,20 @@ SILENCE_RMS = 0.0015
 
 
 def _loopback():
-    """السمّاعه الشغّاله — نلتقط مخرَجها هي بالضبط."""
-    import soundcard as sc
+    """جهاز التقاط مخرَج الصوت — يختلف بين الأنظمه.
 
-    target = sc.default_speaker()
-    for mic in sc.all_microphones(include_loopback=True):
-        if mic.isloopback and mic.name == target.name:
-            return mic, target.name
-
-    loops = [m for m in sc.all_microphones(include_loopback=True) if m.isloopback]
-    if not loops:
-        raise RuntimeError("ما لقيت جهازاً ألتقط منه مخرَج الصوت")
-    return loops[0], loops[0].name
+    ويندوز ← WASAPI loopback، جاهز بلا شي
+    لينكس  ← مصدر `.monitor` من PulseAudio أو PipeWire
+    ماك    ← **ما عنده طريقه أصليه**، يحتاج BlackHole أو ما شابهه
+    """
+    mic = plat.loopback_mic()
+    if mic is None:
+        hint = plat.LOOPBACK_HELP.get(plat.OS, "")
+        msg = "ما لقيت جهازاً ألتقط منه مخرَج الصوت."
+        if hint:
+            msg += "\n" + hint
+        raise RuntimeError(msg)
+    return mic, mic.name
 
 
 def record(seconds: float = DEFAULT_SECONDS):
@@ -81,8 +84,6 @@ def transcribe(audio) -> str:
 
 
 def main() -> None:
-    if not windows_only("سمع مخرَج الجهاز"):
-        return
     if not ensure("soundcard", "numpy"):
         return
     seconds = DEFAULT_SECONDS

@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import _platform as plat  # noqa: E402
 from _common import ROOT, call, ensure, line, persona, user_name  # noqa: E402
 
 REF = ROOT / ".vision_ref.jpg"
@@ -55,24 +56,8 @@ REGIONS = {
 
 
 def _active_rect() -> dict | None:
-    """إحداثيات النافذه الشغّاله."""
-    import ctypes
-    import ctypes.wintypes as wt
-
-    try:
-        u = ctypes.windll.user32
-        hwnd = u.GetForegroundWindow()
-        if not hwnd:
-            return None
-        r = wt.RECT()
-        u.GetWindowRect(hwnd, ctypes.byref(r))
-        w, h = r.right - r.left, r.bottom - r.top
-        if w < 120 or h < 120:
-            return None
-        return {"left": max(0, r.left), "top": max(0, r.top),
-                "width": w, "height": h}
-    except Exception:
-        return None
+    """إحداثيات النافذه الشغّاله — عبر طبقة النظام، تشتغل بالثلاثه."""
+    return plat.active_window()
 
 
 def grab(window_only: bool = False, region: tuple | None = None,

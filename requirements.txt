@@ -1,4 +1,4 @@
-# ── الأساس (كل الحواس تحتاجها) ──
+# ── الأساس — يشتغل على ويندوز وماك ولينكس ──
 requests>=2.31
 numpy>=1.24
 Pillow>=10.0
@@ -6,9 +6,16 @@ mss>=9.0
 psutil>=5.9
 python-dotenv>=1.0
 
-# ── الصوت — ويندوز ──
-sounddevice>=0.4 ; sys_platform == "win32"
-soundcard>=0.4   ; sys_platform == "win32"
+# ── الصوت — الثلاثه ──
+# sounddevice  : المايك        (PortAudio: WASAPI · CoreAudio · ALSA)
+# soundcard    : مخرَج الجهاز  (ويندوز جاهز · لينكس PulseAudio · ماك يحتاج BlackHole)
+sounddevice>=0.4
+soundcard>=0.4
 
 # ── اختياري: تفريغ الصوت محلياً (تحميل ~١ قيقا أول مره) ──
 # faster-whisper>=1.0
+
+# ── أدوات نظام (مو pip) ──
+# لينكس : sudo apt install xdotool wmctrl
+# ماك   : osascript جاي مع النظام — بس فعّل Accessibility
+# ماك   : brew install blackhole-2ch   ← لو تبي «وش مشغّل الحين»

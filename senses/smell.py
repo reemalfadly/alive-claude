@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import _platform as plat  # noqa: E402
 from _common import ROOT, config, ensure, line, user_name  # noqa: E402
 
 REPORT = ROOT / "alerts.md"
@@ -106,44 +107,11 @@ def _gpu():
     return None
 
 
-def _frozen():
-    """نافذه ما تستجيب. برامج المونتاج تنشغل دقايق وهي بخير،
-    فما ننبّه إلا لو تكرر مرتين."""
-    import ctypes
-    import ctypes.wintypes as wt
-
-    try:
-        u = ctypes.windll.user32
-        proc = ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
-        stuck: list[str] = []
-
-        def cb(hwnd, _l):
-            if not u.IsWindowVisible(hwnd):
-                return True
-            n = u.GetWindowTextLengthW(hwnd)
-            if n < 3:
-                return True
-            result = wt.DWORD()
-            if not u.SendMessageTimeoutW(hwnd, 0, 0, 0, 2, 1200,
-                                         ctypes.byref(result)):
-                b = ctypes.create_unicode_buffer(n + 1)
-                u.GetWindowTextW(hwnd, b, n + 1)
-                stuck.append(b.value[:45])
-            return True
-
-        u.EnumWindows(proc(cb), 0)
-
-        for title in list(_frozen_seen):
-            if title not in stuck:
-                _frozen_seen.pop(title, None)
-
-        for title in stuck:
-            _frozen_seen[title] = _frozen_seen.get(title, 0) + 1
-            if _frozen_seen[title] >= FROZEN_STREAK:
-                return ("frozen", f"«{title}» ما يستجيب من فتره.")
-    except Exception:
-        pass
-    return None
+def _frozen() -> list[str]:
+    """نوافذ ما ترد. ويندوز بس — ماك ولينكس ما عندهم مقابل موثوق،
+    وبدل ما نخمّن ونطلّع إنذاراً كاذباً، نرجّع فاضياً."""
+    names = plat.frozen_windows()
+    return names or []
 
 
 def _bad_export():

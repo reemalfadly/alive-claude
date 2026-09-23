@@ -23,7 +23,7 @@ REQUIRED = [
     ("Pillow", "PIL"),
     ("mss", "mss"),
     ("sounddevice", "sounddevice"),
-    ("soundcard", "soundcard"),
+    ("soundcard", "soundcard"),        # التقاط مخرَج الجهاز — الثلاثه
     ("psutil", "psutil"),
     ("python-dotenv", "dotenv"),
 ]

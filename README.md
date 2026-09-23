@@ -6,9 +6,9 @@
 
 يشوف شاشتك · يسمع اللي تشغّله · يسمعك من المايك · يشمّ المشاكل قبل ما تنكسر · يتحكّم بنوافذك · يلاحظ إيقاع يومك
 
-مجاني بالكامل · مفتوح المصدر · كل شي يشتغل على جهازك
+**ويندوز · ماك · لينكس** — مجاني بالكامل، مفتوح المصدر، وكل شي يشتغل على جهازك
 
-[التنزيل](#-التنزيل-بأمر-واحد) · [الحواس](#-الحواس-العشر) · [الخصوصيه](#-الخصوصيه-مبنيه-بالكود-مو-وعداً) · [English](#-english)
+[التنزيل](#-التنزيل--جمله-وحده-لكلود-كود) · [الحواس](#-الحواس-العشر) · [الخصوصيه](#-الخصوصيه-مبنيه-بالكود-مو-وعداً) · [English](#-english)
 
 </div>
 
@@ -25,7 +25,28 @@
 
 ---
 
-## ⚡ التنزيل بأمر واحد
+## ⚡ التنزيل — جمله وحده لكلود كود
+
+**ما تحتاج تنزّل شي بيدك.** افتح كلود كود، والصق هالجمله:
+
+```
+نزّل مهارة alive claude من https://github.com/reemalfadly/alive-claude وشغّلها
+```
+
+كلود كود بيسوي كل شي بنفسه:
+
+1. ينسخها لـ`~/.claude/skills/alive-claude/`
+2. ينزّل المكتبات
+3. **يسألك عن اسمك ومفتاحك** ويحفظهم
+4. يجرّبها قدامك
+
+بعدها **سكّر الجلسه وافتح وحده جديده**، وقل:
+
+> **«شوف شاشتي»**
+
+---
+
+### أو نزّلها بيدك
 
 ```bash
 git clone https://github.com/reemalfadly/alive-claude.git
@@ -33,26 +54,68 @@ cd alive-claude
 python install.py
 ```
 
-وبس. السكربت يسوي كل شي:
+> على ماك ولينكس استخدم `python3` بدل `python`.
 
-1. ينسخ المهاره لـ`~/.claude/skills/alive-claude/`
-2. ينزّل المكتبات المطلوبه
-3. يسألك عن **اسمك** ومفتاحك وكلمة التنبيه
-
-بعدها **سكّر جلسة كلود كود وافتح وحده جديده**، وقل:
-
-> **«شوف شاشتي»**
-
-### ما عندك git؟
-
-نزّل [ZIP](https://github.com/reemalfadly/alive-claude/archive/refs/heads/main.zip)،
+**ما عندك git؟** نزّل
+[ZIP](https://github.com/reemalfadly/alive-claude/archive/refs/heads/main.zip)،
 فكّه، وشغّل `python install.py` جوّه المجلد.
+
+---
+
+### 🌙 تبيها شغّاله دايماً بالخلفيه؟
+
+```bash
+python background.py --on
+```
+
+يسجّلها تشتغل مع كل إقلاع — **بلا خدمه ولا صلاحيات إداريه**:
+اختصار بمجلد Startup على ويندوز، LaunchAgent على ماك، ملف `.desktop`
+على لينكس. تلغيها بـ`--off` وتنمسح تماماً.
+
+وقتها الرفيق يقعد صغيراً على سطح مكتبك، يصغى لكلمة التنبيه، ويشمّ
+المشاكل قبل ما تنكسر.
 
 ### المفتاح
 
 من [Google AI Studio](https://aistudio.google.com/apikey) — **مجاني وبلا بطاقه**.
 
 بلا مفتاح: البصر والصوت الطبيعي يتعطّلون، و**باقي الحواس تشتغل عادي**.
+
+---
+
+## 🖥 على أي نظام تشتغل؟
+
+المهاره كلها تمرّ من طبقة نظام واحده، فما فيه حاسه «تنهار» على نظام —
+إما تشتغل، أو تقول لك بوضوح وش ينقصها.
+
+| الحاسه | ويندوز | ماك | لينكس |
+|---|:---:|:---:|:---:|
+| 👁 البصر (بكل قدراته الخمس) | ✅ | ✅ | ✅ |
+| 🎤 المايك والصوت | ✅ | ✅ | ✅ |
+| 👃 الشمّ | ✅ | ✅ | ✅ |
+| 🧠 الملاحظه والحافظه | ✅ | ✅ | ✅¹ |
+| ✋ اليد (النوافذ والاختصارات) | ✅ | ✅² | ✅³ |
+| 👂 سمع مخرَج الجهاز | ✅ | ⚠️⁴ | ✅ |
+| 🧊 كشف البرامج المتجمّده | ✅ | ➖ | ➖ |
+
+<sub>
+
+**¹** الحافظه تحتاج `xclip` أو `xsel` أو `wl-paste`
+**²** ماك يطلب إذناً مره وحده: `System Settings ← Privacy & Security ← Accessibility`
+**³** لينكس يحتاج `sudo apt install xdotool wmctrl`
+**⁴** ماك ما يعطي أي برنامج مخرَج الصوت مباشره. الحل: `brew install blackhole-2ch` ثم سوِّ Multi-Output Device
+**➖** ماك ولينكس ما عندهم مقابل موثوق، فنسكت بدل ما نطلّع إنذاراً كاذباً
+
+</sub>
+
+**الاختصارات تنقلب تلقائياً:** تقول «احفظ» فيضغط `Ctrl+S` بويندوز
+و`Cmd+S` بماك. ما تحتاج تغيّر شي.
+
+عشان تعرف وش حالة جهازك بالضبط:
+
+```bash
+python senses/_platform.py
+```
 
 ---
 
@@ -110,11 +173,11 @@ Google AI Studio **بمفتاحك أنت**. ما فيه خادم وسيط، ول
 
 ---
 
-## 🖥 المتطلبات
+## 📋 المتطلبات
 
 | | |
 |---|---|
-| **النظام** | ويندوز ١٠ / ١١ — السمع واليد والرفيق يحتاجون ويندوز، والباقي يشتغل بكل مكان |
+| **النظام** | ويندوز ١٠/١١ · macOS ١٢+ · لينكس (X11 أو Wayland) |
 | **بايثون** | ٣.١٠ فأعلى |
 | **المفتاح** | [Google AI Studio](https://aistudio.google.com/apikey) — مجاني |
 | **اختياري** | كرت NVIDIA — يسرّع تفريغ الصوت |
@@ -127,21 +190,24 @@ Google AI Studio **بمفتاحك أنت**. ما فيه خادم وسيط، ول
 المهاره تشتغل من داخل كلود كود بالكلام العادي، وتقدر تشغّلها يدوياً:
 
 ```bash
-python senses/see.py                    # لقطه ووصف
-python senses/see.py "ليش هالخطأ؟"      # سؤال محدد
-python senses/see.py --text             # يقرأ النص حرفياً
-python senses/see.py --clip 8           # يتابع ٨ ثواني
-python senses/see.py --region يمين      # منطقه محدده
-python senses/see.py --mark             # يحفظ «قبل»
-python senses/see.py --diff             # وش تغيّر
+python senses/_platform.py               # وش يشتغل على نظامك؟
 
-python senses/hear.py 15                # يسمع مخرَج جهازك ١٥ ثانيه
-python senses/mic.py                    # يسمعك
-python senses/smell.py                  # فحص فوري
-python senses/smell.py --watch          # مراقبه مستمره
-python senses/voice.py "أهلاً"          # يتكلم
+python senses/see.py                     # لقطه ووصف
+python senses/see.py "ليش هالخطأ؟"       # سؤال محدد
+python senses/see.py --text              # يقرأ النص حرفياً
+python senses/see.py --clip 8            # يتابع ٨ ثواني
+python senses/see.py --region يمين       # منطقه محدده
+python senses/see.py --mark              # يحفظ «قبل»
+python senses/see.py --diff              # وش تغيّر
 
-python companion.py                     # الرفيق العايم على سطح المكتب
+python senses/hear.py 15                 # يسمع مخرَج جهازك ١٥ ثانيه
+python senses/mic.py                     # يسمعك
+python senses/smell.py                   # فحص فوري
+python senses/smell.py --watch           # مراقبه مستمره
+python senses/hand.py                    # نوافذك واختصاراتك
+python senses/voice.py "أهلاً"           # يتكلم
+
+python companion.py                      # الرفيق العايم على سطح المكتب
 ```
 
 ---
@@ -153,8 +219,10 @@ python companion.py                     # الرفيق العايم على سط�
 | كلود ما يعرف المهاره | سكّر الجلسه وافتح وحده جديده |
 | «ما فيه مفتاح» | `python setup.py` |
 | الرؤيه ترجع 400 أو 404 | `python senses/_common.py --probe` — يفحص أي نموذج يقبل الصور بمفتاحك |
-| ما يسمع المايك | تأكد إن ويندوز معطي بايثون إذن المايك |
-| ما يسمع مخرَج الجهاز | `pip install soundcard` |
+| ما يسمع المايك | أعطِ بايثون إذن المايك من إعدادات نظامك |
+| ما يسمع مخرَج الجهاز | شغّل `python senses/hear.py` — بيقول لك وش ينقصك بالضبط |
+| اليد ما تتحكّم (ماك) | `System Settings ← Privacy & Security ← Accessibility` ← فعّل الترمنال |
+| اليد ما تتحكّم (لينكس) | `sudo apt install xdotool wmctrl` |
 | ملف بايثون انكسر | `python guard.py --fix` |
 | `python` يفتح متجر مايكروسوفت | استخدم `py` بدالها: `py install.py` |
 
@@ -170,7 +238,8 @@ python companion.py                     # الرفيق العايم على سط�
 alive-claude/
 ├── SKILL.md              تعريف المهاره لكلود كود
 ├── README.md             هذا الملف
-├── install.py            التنزيل بأمر واحد
+├── install.py            التنزيل (--auto بلا أسئله)
+├── background.py         التشغيل مع الإقلاع
 ├── setup.py              الإعداد — يسأل عن اسمك ومفتاحك
 ├── guard.py              حارس الصياغه — يمسك الملف المكسور ويصلّحه
 ├── companion.py          الرفيق العايم (أيقونة بكسل تقفز مع الحواس)
@@ -178,15 +247,21 @@ alive-claude/
 ├── docs/
 │   └── guide.html        شرح مصوّر — افتحه بالمتصفح
 └── senses/
+    ├── _platform.py      طبقة النظام — المكان الوحيد اللي يعرف نظامك
     ├── _common.py        الأساس المشترك + فاحص النماذج
     ├── see.py            البصر — خمس قدرات
-    ├── hear.py           يسمع مخرَج الجهاز (WASAPI loopback)
+    ├── hear.py           يسمع مخرَج الجهاز
     ├── mic.py            يسمعك
     ├── voice.py          صوته
     ├── smell.py          يشمّ المشاكل
     ├── hand.py           يتحكّم بالنوافذ
     └── notice.py         يلاحظ عاداتك
 ```
+
+**ليش `_platform.py` ملف لحاله؟** أول نسخه كانت تنادي واجهة ويندوز من
+جوّه كل حاسه — يعني المهاره **تنهار بالاستيراد** على ماك قبل لا يشوف
+المستخدم أي رساله مفيده. الحين كل نداء نظام يمرّ من مكان واحد، ولو
+النظام ما يدعم شيئاً يرجّع «ما أقدر» بدل ما ينهار.
 
 ---
 
@@ -200,12 +275,27 @@ learns your daily rhythm.
 Free, open source, and everything runs locally — the only outbound call is
 vision and natural voice, which goes to Google AI Studio with **your own** key.
 
-### Install
+### Install — one sentence to Claude Code
+
+Open Claude Code and paste:
+
+```
+install the alive claude skill from https://github.com/reemalfadly/alive-claude and run it
+```
+
+Claude Code clones it, installs the dependencies, **asks you for your name and
+key**, and tries it in front of you. Or do it yourself:
 
 ```bash
 git clone https://github.com/reemalfadly/alive-claude.git
 cd alive-claude
-python install.py
+python3 install.py
+```
+
+To keep it running in the background from every boot:
+
+```bash
+python3 background.py --on
 ```
 
 The installer copies the skill into `~/.claude/skills/alive-claude/`, installs
@@ -222,6 +312,18 @@ Sight · precise text reading · motion over several frames · before/after diff
 region-only capture · system-audio hearing · microphone listening with a wake
 phrase · anomaly sensing · window control · habit noticing.
 
+### Platforms
+
+**Windows, macOS and Linux.** Every OS call goes through a single
+`senses/_platform.py` layer, so nothing crashes on import — a sense either
+works or tells you exactly what it needs. Shortcuts translate automatically
+(`Ctrl+S` on Windows/Linux, `Cmd+S` on macOS).
+
+Platform notes: macOS needs Accessibility permission for window control, and a
+virtual audio driver (`brew install blackhole-2ch`) to hear system output.
+Linux needs `xdotool` and `wmctrl` for window control. Run
+`python3 senses/_platform.py` to see exactly what works on your machine.
+
 ### Privacy
 
 Nothing is written before the wake phrase. Raw audio is deleted right after
@@ -229,12 +331,6 @@ local transcription. Transcription is fully local — your voice never leaves th
 machine. No screenshots are kept except the one comparison reference.
 Clipboard is read and discarded. Anything resembling a secret is refused.
 It pauses on banking, password, and incognito windows.
-
-### Requirements
-
-Windows 10/11 (hearing, hand, and companion need Windows; the rest is portable),
-Python 3.10+, and a free Google AI Studio key. Without a key, vision and natural
-voice are disabled and every other sense still works.
 
 ---
 
