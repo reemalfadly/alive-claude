@@ -1,0 +1,18 @@
+# ── إعداداتك الشخصيه — فيها اسمك ومفتاحك، ما ترفع أبداً ──
+config.json
+.env
+
+# ── ملفات تنتجها المهاره أثناء الشغل ──
+.vision_ref.jpg
+*.wav
+*.mp3
+alerts.md
+notice_log.json
+habits.json
+
+# ── بايثون ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/

@@ -1,0 +1,301 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<title>كلود حي</title>
+<style>
+  :root{
+    --bg:#0a0b10; --bg-2:#13161f; --bg-3:#0e1118; --ink:#eef0f7; --muted:#9aa0b4;
+    --line:#22262f; --line-2:#2f3542;
+    --claude:#d9775a; --claude-soft:rgba(217,119,90,.12);
+    --see:#38bdf8; --see-soft:rgba(56,189,248,.12);
+    --hear:#34d399; --hear-soft:rgba(52,211,153,.12);
+    --ok:#33d69f; --warn:#f5a524;
+    --radius:16px; --maxw:46rem;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); direction:rtl;
+    font-family:"IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif;
+    font-size:17px; line-height:1.9;
+    background-image:radial-gradient(1100px 480px at 85% -8%, rgba(217,119,90,.13), transparent 60%),
+                     radial-gradient(900px 480px at 0% 5%, rgba(56,189,248,.07), transparent 55%);
+    background-repeat:no-repeat;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:clamp(22px,5vw,58px) clamp(16px,4vw,28px) 90px}
+  a{color:var(--see); text-underline-offset:3px}
+  b,strong{color:#fff; font-weight:600}
+  code,kbd{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.88em}
+  p code,li code,td code{background:#1b1f29; border:1px solid var(--line-2); border-radius:6px;
+    padding:1px 6px; color:#f0d7cd; direction:ltr; display:inline-block; line-height:1.4}
+
+  header{margin-bottom:28px}
+  .eyebrow{font-family:"Cairo",sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.16em;
+    color:var(--claude); margin:0 0 12px}
+  h1{font-family:"Cairo",sans-serif; font-weight:800; font-size:clamp(2rem,6.6vw,2.9rem);
+    line-height:1.2; margin:0 0 14px;
+    background:linear-gradient(100deg,#fff 30%, var(--claude)); -webkit-background-clip:text;
+    background-clip:text; color:transparent}
+  .lede{font-size:1.12rem; color:var(--muted); margin:0; max-width:38rem}
+  .byline{font-family:"Cairo",sans-serif; font-weight:700; font-size:.95rem;
+    color:var(--claude); margin:18px 0 0}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 0; padding:0; list-style:none}
+  .chips li{font-family:"Cairo",sans-serif; font-weight:600; font-size:.82rem;
+    background:var(--bg-2); border:1px solid var(--line); border-radius:999px;
+    padding:6px 14px; color:var(--muted)}
+
+  h2{font-family:"Cairo",sans-serif; font-weight:800; font-size:1.42rem;
+    margin:52px 0 6px; padding-top:20px; border-top:1px solid var(--line)}
+  h2 .n{color:var(--claude); margin-inline-end:8px}
+  h3{font-family:"Cairo",sans-serif; font-weight:700; font-size:1.06rem; margin:28px 0 8px; color:#fff}
+
+  .hero{background:var(--bg-2); border:1px solid var(--line);
+    border-inline-start:4px solid var(--claude); border-radius:14px;
+    padding:20px 22px; margin:26px 0}
+  .hero b{color:var(--claude)}
+
+  pre{background:#0c0f16; border:1px solid var(--line-2); border-radius:12px;
+    padding:15px 17px; overflow-x:auto; direction:ltr; text-align:left; margin:14px 0}
+  pre code{color:#dbe6ff; font-size:.88rem; line-height:1.75}
+
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:.96rem}
+  th,td{border:1px solid var(--line); padding:10px 13px; text-align:right; vertical-align:top}
+  th{background:var(--bg-3); font-family:"Cairo",sans-serif; font-weight:700; color:#fff}
+  td:first-child{white-space:nowrap; color:#fff; font-weight:500}
+
+  .senses{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:12px; margin:20px 0}
+  .sense{background:var(--bg-2); border:1px solid var(--line); border-radius:14px; padding:16px 18px}
+  .sense .icon{font-size:1.55rem; line-height:1; margin-bottom:8px}
+  .sense h4{font-family:"Cairo",sans-serif; font-weight:700; font-size:1rem; margin:0 0 5px; color:#fff}
+  .sense p{margin:0; color:var(--muted); font-size:.92rem; line-height:1.7}
+  .sense .say{display:block; margin-top:9px; color:var(--see); font-size:.88rem}
+
+  .privacy{background:rgba(51,214,159,.07); border:1px solid rgba(51,214,159,.3);
+    border-radius:14px; padding:18px 20px; margin:22px 0}
+  .privacy h3{margin-top:0; color:var(--ok)}
+  .privacy ul{margin:0; padding-inline-start:20px}
+  .privacy li{margin:7px 0}
+
+  .warn{background:rgba(245,165,36,.07); border:1px solid rgba(245,165,36,.3);
+    border-radius:14px; padding:16px 20px; margin:20px 0}
+  .warn b{color:var(--warn)}
+
+  .steps{counter-reset:s; list-style:none; padding:0; margin:20px 0}
+  .steps>li{counter-increment:s; position:relative; padding-inline-start:46px; margin:22px 0}
+  .steps>li::before{content:counter(s); position:absolute; inset-inline-start:0; top:1px;
+    width:30px; height:30px; border-radius:50%; background:var(--claude-soft);
+    border:1px solid rgba(217,119,90,.4); color:var(--claude);
+    font-family:"Cairo",sans-serif; font-weight:700; font-size:.92rem;
+    display:grid; place-items:center}
+  .steps h3{margin:0 0 5px}
+
+  footer{margin-top:64px; padding-top:22px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:.92rem}
+  footer b{color:var(--claude)}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">مهارة كلود كود</p>
+  <h1>كلود حي</h1>
+  <p class="lede">
+    كلود كود يقرأ ملفاتك ويكتب كوداً. هذي المهاره تعطيه <b>حواس</b>:
+    يشوف شاشتك، يسمع اللي تشغّله، يسمعك تتكلم، ويحسّ بالمشاكل قبل ما تنكسر.
+  </p>
+  <p class="byline">م. ريم الفضلي — @iconReem</p>
+  <ul class="chips">
+    <li>مجاني بالكامل</li>
+    <li>ويندوز</li>
+    <li>كل شي على جهازك</li>
+    <li>مفتوح المصدر</li>
+  </ul>
+</header>
+
+<div class="hero">
+  <b>الفكره بجمله:</b> المساعد اللي يقرأ الملفات صار يشوف ويسمع ويحسّ.
+  تقول له «شوف شاشتي» فيشوفها فعلاً، و«شم لي» فيقول لك إن قرصك بيمتلئ
+  قبل ما يوقف تصديرك.
+</div>
+
+<h2><span class="n">١</span>الحواس</h2>
+
+<div class="senses">
+  <div class="sense">
+    <div class="icon">👁</div>
+    <h4>البصر</h4>
+    <p>يلتقط شاشتك ويحلّلها.</p>
+    <span class="say">«شوف شاشتي»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">📖</div>
+    <h4>القراءه الدقيقه</h4>
+    <p>يقرأ النص الصغير حرفياً — كود أو ترجمه أو أرقام.</p>
+    <span class="say">«وش مكتوب»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">🎬</div>
+    <h4>المتابعه</h4>
+    <p>عدة إطارات على مدى ثواني ⇦ يفهم الحركه مو لقطه جامده.</p>
+    <span class="say">«تابع معاي هالمقطع»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">🔍</div>
+    <h4>المقارنه</h4>
+    <p>يحفظ لقطة «قبل» ويقول لك وش تغيّر.</p>
+    <span class="say">«وش تغيّر»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">🎯</div>
+    <h4>المنطقه</h4>
+    <p>جزء من الشاشه بس — أدق، وما يشوف الباقي.</p>
+    <span class="say">«شوف الزاويه اليمنى»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">👂</div>
+    <h4>السمع</h4>
+    <p>يسمع مخرَج جهازك مباشره ويفرّغه — مو من المايك.</p>
+    <span class="say">«وش مشغّل الحين»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">🎤</div>
+    <h4>الإصغاء</h4>
+    <p>يسمعك من المايك ويرد بصوت طبيعي.</p>
+    <span class="say">«كلود اسمعني»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">👃</div>
+    <h4>الشمّ</h4>
+    <p>يحسّ بالمشكله قبل ما تنكسر — <b>وينبّهك من نفسه</b>.</p>
+    <span class="say">«شم لي» · «كل شي تمام؟»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">✋</div>
+    <h4>اليد</h4>
+    <p>يضغط ويكتب ويتحكّم بالنوافذ بمكانك.</p>
+    <span class="say">«احفظ» · «بدّل للكروم»</span>
+  </div>
+  <div class="sense">
+    <div class="icon">🧠</div>
+    <h4>الملاحظه</h4>
+    <p>يتعلّم إيقاع يومك ويعرف متى تكون مركّزاً.</p>
+    <span class="say">«وش عاداتي» · «أنا مركّز؟»</span>
+  </div>
+</div>
+
+<h3>حاسة الشمّ تستاهل وقفه</h3>
+<p>
+  باقي الحواس ترد لما تسأل. <b>الشمّ ينبّهك من نفسه</b>:
+</p>
+<table>
+  <tr><th>يشمّ</th><th>يقول لك</th></tr>
+  <tr><td>القرص يمتلئ</td><td>«باقي ٨ قيقا — التصدير بيوقف»</td></tr>
+  <tr><td>برنامج ياكل الذاكره</td><td>«هالبرنامج أكل ١٢ قيقا والجهاز ٩٠٪»</td></tr>
+  <tr><td>برنامج علّق</td><td>«ما يستجيب من فتره»</td></tr>
+  <tr><td>تصدير ناقص</td><td>«الملف طلع ٤ ميقا بس — يمكن انقطع»</td></tr>
+  <tr><td>النت وقف</td><td>«انقطع النت»</td></tr>
+</table>
+<p>
+  <b>وما يزعجك:</b> نفس الإنذار ما يتكرر قبل ٤٥ دقيقه، والبرنامج المشغول
+  ما يُعتبر معلّقاً إلا لو تكرر مرتين — لأن برامج المونتاج تنشغل دقايق وهي بخير.
+</p>
+
+<h2><span class="n">٢</span>التنزيل</h2>
+
+<ol class="steps">
+  <li>
+    <h3>نزّل المهاره</h3>
+    <p>حمّل المجلد وحطّه بمجلد مهارات كلود كود:</p>
+    <pre><code>C:\Users\&lt;اسمك&gt;\.claude\skills\alive-claude\</code></pre>
+  </li>
+
+  <li>
+    <h3>خذ مفتاحاً مجانياً</h3>
+    <p>
+      من <a href="https://aistudio.google.com/apikey">Google AI Studio</a> —
+      مجاني بلا بطاقه.
+    </p>
+    <p style="color:var(--muted)">
+      بلا مفتاح: البصر والصوت الطبيعي يتعطّلون، وباقي الحواس تشتغل عادي.
+    </p>
+  </li>
+
+  <li>
+    <h3>شغّل الإعداد</h3>
+    <pre><code>cd .claude\skills\alive-claude
+python setup.py</code></pre>
+    <p>بيسألك عن اسمك ومفتاحك وكلمة التنبيه، وينزّل المكتبات.</p>
+  </li>
+
+  <li>
+    <h3>جرّب</h3>
+    <pre><code>python senses/see.py            # يشوف شاشتك
+python senses/smell.py          # يفحص جهازك
+python companion.py             # الرفيق العايم</code></pre>
+    <p>وبكلود كود قل: <b>«شوف شاشتي»</b> أو <b>«شم لي»</b>.</p>
+  </li>
+</ol>
+
+<h2><span class="n">٣</span>الرفيق العايم</h2>
+<p>
+  أيقونة بكسل صغيره على سطح مكتبك تتنفّس وهي نايمه، و<b>تقفز</b> لما تشتغل
+  حواسها:
+</p>
+<table>
+  <tr><th>الحاله</th><th>الشكل</th></tr>
+  <tr><td>نايم</td><td>رمادي · عيون مغمضه · zzz</td></tr>
+  <tr><td>يسمع</td><td>أخضر · يقفز · موجات صوت</td></tr>
+  <tr><td>يشوف</td><td>سماوي · حلقة مسح تدور</td></tr>
+  <tr><td>يفكر</td><td>برتقالي · نقاط تدور</td></tr>
+</table>
+<p>
+  نقره ⇦ لوح المحادثه · سحب ⇦ يتحرك ويتذكر مكانه · نقره يمين ⇦ قائمه.
+</p>
+
+<div class="privacy">
+  <h3>🔒 الخصوصيه — مو وعداً، مبنيه بالكود</h3>
+  <ul>
+    <li><b>ولا كلمه تنكتب قبل كلمة التنبيه.</b> المايك يسمع، بس اللي قبلها يُفرَّغ محلياً ثم <b>يُرمى فوراً</b>.</li>
+    <li><b>الصوت الخام ينمسح</b> بعد التفريغ مباشره — ما ينحفظ ولا ثانيه.</li>
+    <li><b>التفريغ محلي بالكامل</b> — صوتك ما يطلع من جهازك إطلاقاً.</li>
+    <li><b>ما تنحفظ لقطات</b> إلا مرجع المقارنه، وتقدر تمسحه.</li>
+    <li><b>الحافظه ما تُخزَّن</b> — تُقرأ وتُرمى، وأي شي يشبه مفتاحاً يُتجاهل.</li>
+    <li><b>ما يكتب كلمات سر</b> — أي نص يشبه سراً يُرفض.</li>
+    <li><b>يتوقّف بالنوافذ الخاصه</b> — بنك · كلمة سر · تصفّح متخفٍّ.</li>
+  </ul>
+</div>
+
+<h2><span class="n">٤</span>المتطلبات</h2>
+<table>
+  <tr><td>النظام</td><td>ويندوز ١٠ أو ١١</td></tr>
+  <tr><td>بايثون</td><td>٣.١٠ فأعلى</td></tr>
+  <tr><td>المفتاح</td><td>Google AI Studio — <b>مجاني</b></td></tr>
+  <tr><td>اختياري</td><td>كرت NVIDIA (يسرّع تفريغ الصوت)</td></tr>
+</table>
+
+<h2><span class="n">٥</span>لو صار عطل</h2>
+<table>
+  <tr><th>العطل</th><th>الحل</th></tr>
+  <tr><td>«ما فيه مفتاح»</td><td><code>python setup.py</code></td></tr>
+  <tr><td>الرؤيه ترجع 404</td><td><code>python senses/_common.py --probe</code> — يفحص أي نماذج تشتغل بمفتاحك</td></tr>
+  <tr><td>ما يسمع المايك</td><td>تأكد إن ويندوز يعطي بايثون إذن المايك</td></tr>
+  <tr><td>ما يسمع مخرَج الجهاز</td><td><code>pip install soundcard</code></td></tr>
+  <tr><td>بطء أول مره</td><td>تحميل نموذج السمع — مره وحده بس</td></tr>
+  <tr><td>ملف بايثون انكسر</td><td><code>python guard.py --fix</code> — يصلّحه تلقائياً</td></tr>
+</table>
+
+<div class="warn">
+  <b>ملاحظه:</b> حاسة اليد تتحكّم بجهازك فعلاً — تضغط وتكتب وتسكّر نوافذ.
+  ما تكتب كلمات سر أبداً، بس خلّك واعياً وش تطلب منها.
+</div>
+
+<footer>
+  <p>
+    <b>كلود حي</b> — مهارة مفتوحة المصدر لكلود كود.
+    صُنعت بواسطة <b>م. ريم الفضلي</b> · @iconReem
+  </p>
+  <p style="color:var(--muted); font-size:.88rem">
+    كل الحواس تشتغل على جهازك. نداءات البصر والصوت الطبيعي تروح لـGoogle AI Studio
+    بمفتاحك المجاني، وما عداها محلي بالكامل.
+  </p>
+</footer>
+
+</div>
