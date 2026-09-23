@@ -1,6 +1,6 @@
 ---
 name: alive-claude
-description: كلود حي — يعطي كلود كود حواسّاً على جهاز المستخدم، Alive Claude gives Claude Code senses on the user's machine. ALWAYS use this skill when the user asks Claude to see, look at, read, or watch their screen; to hear what is playing on their machine; to listen to their microphone; to sense or check whether anything is wrong; to control their windows; or to notice their habits — and ALWAYS when they ask to install, set up, or activate Alive Claude. Arabic triggers "كلود حي"، "شغّل كلود حي"، "نزّل كلود حي"، "فعّل الحواس"، "شوف شاشتي"، "وش على الشاشه"، "وش مكتوب"، "وش تغيّر"، "تابع معاي هالمقطع"، "شوف الزاويه اليمنى"، "وش مشغّل"، "اسمع اللي مشغّله"، "كلود اسمعني"، "شم لي"، "كل شي تمام؟"، "وش عاداتي"، "أنا مركّز؟"، "شغّله بالخلفيه". English triggers "run alive claude", "install alive claude", "set up alive claude", "look at my screen", "what's on my screen", "read my screen", "what changed on screen", "watch my screen", "what am I playing", "listen to my mic", "sense my machine", "is anything wrong with my computer", "run it in the background". Works on Windows, macOS and Linux with a free Google AI Studio key; everything runs locally except the vision and natural-voice calls.
+description: كلود حي — يعطي كلود كود حواسّاً على جهاز المستخدم، Alive Claude gives Claude Code senses on the user's machine. ALWAYS use this skill when the user asks Claude to see, look at, read, or watch their screen; to hear what is playing on their machine; to listen to their microphone; to sense or check whether anything is wrong; to control their windows; or to notice their habits — and ALWAYS when they ask to install, set up, or activate Alive Claude. Arabic triggers "كلود حي"، "شغّل كلود حي"، "نزّل كلود حي"، "فعّل الحواس"، "شوف شاشتي"، "وش على الشاشه"، "وش مكتوب"، "وش تغيّر"، "تابع معاي هالمقطع"، "شوف الزاويه اليمنى"، "وش مشغّل"، "اسمع اللي مشغّله"، "كلود اسمعني"، "شم لي"، "كل شي تمام؟"، "وش عاداتي"، "أنا مركّز؟"، "شغّله بالخلفيه"، و«كلود اسكت» توقّفه تماماً لين يناديك بكلمة التنبيه. English triggers "run alive claude", "install alive claude", "set up alive claude", "look at my screen", "what's on my screen", "read my screen", "what changed on screen", "watch my screen", "what am I playing", "listen to my mic", "sense my machine", "is anything wrong with my computer", "run it in the background", and "claude stop" / "be quiet" which silences it until the full wake phrase. Works on Windows, macOS and Linux with a free Google AI Studio key; everything runs locally except the vision and natural-voice calls.
 ---
 
 # كلود حي — حواس على جهاز المستخدم
@@ -173,6 +173,19 @@ python senses/hand.py احفظ
 ```bash
 python senses/notice.py
 ```
+
+### 🤐 السكوت
+
+لو قال **«كلود اسكت»** (أو «اسكت يا كلود» أو «كلود بس خلاص» أو
+`claude stop`، أو **«اسكت»** لحالها):
+
+- **اسكت فوراً.** لا ترد، لا تنطق، ولا تكتب شيئاً مما يقوله.
+- اقطع أي نطق بنصّه — لا تكمّل الجمله.
+- **ما ترجع إلا بكلمة التنبيه كامله.** «كلود» وحدها **ما تكفي** —
+  ذكر اسمك بحديث عابر ما يلغي سكوته المتعمّد.
+
+الرفيق العايم ينفّذها بنفسه (`hush()` / `unhush()` بـ`companion.py`).
+وبالمحادثه النصيه: لو قالها، **توقّف عن كل شي** لين يناديك.
 
 ### 🌙 الخلفيه
 

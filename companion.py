@@ -62,6 +62,14 @@ WINDOW_SEC = 90.0
 _wake = (config().get("wake_phrase") or "كلود اسمعني").strip()
 WAKE_PHRASES = tuple({_wake, "كلود", "كلاود", "claude"})
 
+# ── وضع السكوت ──
+# «كلود اسكت» يسكّته تماماً: ما يرد، ما ينطق، وما يكتب شيئاً.
+# ولا يرجع إلا بكلمة التنبيه **كامله** — مو بـ«كلود» وحدها، عشان
+# ما يصحى لأن أحداً ذكر اسمه بالصدفه وانتِ مسكّتته عمداً.
+HUSH_WITH_NAME = ("اسكت", "وقف", "بس", "اصمت", "خلاص", "stop", "quiet",
+                  "shut up")
+HUSH_ALONE = ("اسكت", "اصمت", "بس خلاص", "stop", "shut up")
+
 PET = 96
 CHROMA = "#0b0c10"
 BODY = "#d9775a"
@@ -86,6 +94,25 @@ SPRITE = [
 _events: queue.Queue = queue.Queue()
 _voice = None
 
+# مسكّت؟ Event مو bool عادي — الحلقه بخيط والواجهه بخيط ثاني.
+_hushed = threading.Event()
+
+
+def hush() -> None:
+    """يسكّته فوراً — يقطع نطقه الحالي ويوقف كل رد."""
+    _hushed.set()
+    if _voice is not None:
+        try:
+            _voice.interrupt()      # يقطع اللي بنصّه ويفضّي الطابور
+        except Exception:
+            pass
+    log.info("سكتّ — ما أرد لين تقول «%s»", _wake)
+
+
+def unhush() -> None:
+    _hushed.clear()
+    log.info("رجعت أسمع")
+
 
 # ══════════ كلمة السر ══════════
 def _norm(t: str) -> str:
@@ -96,21 +123,52 @@ def _norm(t: str) -> str:
     return re.sub(r"\s+", " ", t.replace("ة", "ه").replace("ى", "ي")).strip(" ،.؟!")
 
 
-def _wake_match(text: str) -> tuple[bool, str]:
+def _wake_match(text: str, strict: bool = False) -> tuple[bool, str]:
+    """هل ناداني؟ يرجّع (نعم، باقي الكلام).
+
+    `strict` يعني: كلمة التنبيه **كامله** بس. نستخدمه وهو مسكّت، عشان
+    «كلود» العابره بحديث عادي ما تصحّيه وانتِ مسكّتته عمداً.
+    """
     low = _norm(text)
     if not low:
         return False, ""
     words = low.split()
-    for n in (3, 2, 1):
+    phrases = (_wake,) if strict else WAKE_PHRASES
+    for n in (4, 3, 2, 1):
         if len(words) < n:
             continue
         head = " ".join(words[:n])
-        for phrase in WAKE_PHRASES:
+        for phrase in phrases:
             p = _norm(phrase)
             if len(p.split()) == n and (
                     head == p or SequenceMatcher(None, head, p).ratio() >= 0.85):
                 return True, " ".join(words[n:]).strip()
     return False, ""
+
+
+def _hush_match(text: str) -> bool:
+    """هل قالت لي «اسكت»؟
+
+    نقبلها بصورتين:
+      · باسمي   — «كلود اسكت» · «اسكت يا كلود» (بأي مكان بالجمله)
+      · لحالها  — «اسكت» جمله كامله بكلمتين أو أقل
+
+    ليش الشرط الثاني مقيّد: «اسكت» تجي داخل كلام عادي («قلت له اسكت»)،
+    وما نبي نسكّته بالغلط. لو هي كل الجمله، فهي موجّهه لي.
+    """
+    low = _norm(text)
+    if not low:
+        return False
+
+    words = low.split()
+    has_name = any(SequenceMatcher(None, w, "كلود").ratio() >= 0.85
+                   or w in ("claude", "كلاود") for w in words)
+    if has_name and any(h in low for h in HUSH_WITH_NAME):
+        return True
+    if len(words) <= 2 and any(low == h or low.startswith(h + " ")
+                               for h in HUSH_ALONE):
+        return True
+    return False
 
 
 def _append(text: str) -> None:
@@ -127,7 +185,7 @@ def _append(text: str) -> None:
 # ══════════ الصوت والعقل ══════════
 def _say(text: str) -> None:
     global _voice
-    if not text:
+    if not text or _hushed.is_set():
         return
     try:
         from voice import Voice
@@ -203,7 +261,12 @@ def _think(text: str) -> str:
 
 
 def _respond(text: str) -> None:
+    if _hushed.is_set():
+        return
+
     def go() -> None:
+        if _hushed.is_set():
+            return
         _events.put(("state", "think"))
         log.info("أفكر بـ: %s", text[:60])
         reply = _think(text)
@@ -277,8 +340,19 @@ def _listen_loop() -> None:
             if not text:
                 continue
 
-            called, rest = _wake_match(text)
+            # ── «اسكت» أولاً: تسبق كل شي، وتشتغل حتى وهو يرد ──
+            if _hush_match(text):
+                if not _hushed.is_set():
+                    hush()
+                    awake_until = 0.0
+                    _events.put(("hush", None))
+                continue
+
+            # وهو مسكّت، ما يصحّيه إلا كلمة التنبيه كامله
+            called, rest = _wake_match(text, strict=_hushed.is_set())
             if called:
+                if _hushed.is_set():
+                    unhush()
                 awake_until = time.time() + WINDOW_SEC
                 _events.put(("wake", None))
                 if rest:
@@ -287,6 +361,8 @@ def _listen_loop() -> None:
                     _respond(rest)
                 else:
                     _say(f"أسمعك يا {user_name()}.")
+            elif _hushed.is_set():
+                continue                # مسكّت — الكلام يُرمى بلا أثر
             elif awake_until:
                 _events.put(("line", text))
                 _append(text)
@@ -462,6 +538,10 @@ class Pet:
                     self.panel.head(str(payload), "#9aa7c2")
                 elif kind == "ready":
                     self.panel.log(f"جاهز. قل «{_wake}».")
+                elif kind == "hush":
+                    self.pet.set_state("sleep")
+                    self.panel.head(f"مسكّت — قل «{_wake}»", "#8b5a52")
+                    self.panel.log("سكتّ. ما أرد لين تناديني.")
                 elif kind == "wake":
                     self.set_state("listen", jump=True)
                     self.panel.show()
